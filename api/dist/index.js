@@ -38,11 +38,12 @@ export const typeDefs = `#graphql
 // This resolver retrieves books from the "books" array above.
 export const resolvers = {
     Query: {
-        users: async () => await prisma.user.findMany(),
+        users: async () => {
+            return await prisma.user.findMany();
+        }
     },
     Mutation: {
         createUser: async (_parent, args, _contextValue, _info) => {
-            console.log('ARGS: ', args);
             const { username, password, email } = args.createUserInputs;
             const hashedPass = await hash(password);
             return await prisma.user.create({
