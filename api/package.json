@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "compile": "tsc",
-    "start": "npm run compile && nodemon ./dist/index.js"
+    "start": "npm run compile && prettier --write 'src/*' && node ./dist/index"
   },
   "keywords": [],
   "author": "",
@@ -18,8 +18,8 @@
     "argon2": "^0.31.0",
     "cloudinary": "^1.40.0",
     "graphql": "^16.8.0",
+    "prettier": "^3.0.3"
     "nodemon": "^3.0.1",
-    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
