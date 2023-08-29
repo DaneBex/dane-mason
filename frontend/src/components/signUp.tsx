@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-export default class SignUp extends Component {
-  render() {
+export default function SignUp () {
+
     return (
       <form>
         <h3>Sign Up</h3>
@@ -43,7 +43,8 @@ export default class SignUp extends Component {
       </form>
     )
   }
-}
+
+
 
 
 
