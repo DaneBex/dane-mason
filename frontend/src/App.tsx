@@ -29,15 +29,6 @@ function App() {
             </div>
           </div>
         </nav>
-        <div className="auth-wrapper">
-          <div className="auth-inner">
-            <Routes>
-              {/* <Route exact path="/" element={<Login />} /> */}
-              <Route path="/sign-in" element={<Login />} />
-              <Route path="/sign-up" element={<SignUp />} />
-            </Routes>
-          </div>
-        </div>
       </div>
     </Router>
   )
