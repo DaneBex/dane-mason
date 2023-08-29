@@ -1,5 +1,5 @@
 import 'react'
-export default function SignUp () {
+export function SignUp () {
 
     return (
       <form>

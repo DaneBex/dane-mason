@@ -1,7 +1,7 @@
-import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import { PrismaClient } from '@prisma/client';
-import { hash } from 'argon2';
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import { PrismaClient } from "@prisma/client";
+import { hash } from "argon2";
 import winston from 'winston';
 const prisma = new PrismaClient();
 // A schema is a collection of type definitions (hence "typeDefs")
@@ -41,7 +41,7 @@ export const resolvers = {
     Query: {
         users: async () => {
             return await prisma.user.findMany();
-        }
+        },
     },
     Mutation: {
         createUser: async (_parent, args, _contextValue, _info) => {
@@ -52,10 +52,10 @@ export const resolvers = {
                     username: username,
                     password: hashedPass,
                     email: email,
-                }
+                },
             });
-        }
-    }
+        },
+    },
 };
 const logger = winston.createLogger({
     level: 'info',
