@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import 'react'
 
 export default function Login() {
    

@@ -1,9 +1,6 @@
 import './App.css'
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import Login from './components/login'
-import SignUp from './components/signUp'
+import { BrowserRouter as Router, Link } from 'react-router-dom'
 function App() {
   return (
     <Router>
