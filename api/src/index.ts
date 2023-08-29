@@ -2,6 +2,7 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'argon2';
+import winston from 'winston'
 
 const prisma = new PrismaClient()
 // A schema is a collection of type definitions (hence "typeDefs")
@@ -59,6 +60,15 @@ export const resolvers = {
     }
   };
 
+  const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    defaultMeta: { service: 'user-service' },
+    transports: [
+      new winston.transports.Console()
+    ],
+  });
+
   // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
 const server = new ApolloServer({
@@ -74,4 +84,4 @@ const server = new ApolloServer({
     listen: { port: 4000 },
   });
   
-  console.log(`🚀  Server ready at: ${url}`);
+  logger.info(`🚀  Server ready at: ${url}`);
