@@ -5,7 +5,7 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { SignIn } from "./components/SignIn";
-import { SignUp } from "./components/signUp";
+import SignUp from "./components/signUp";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
