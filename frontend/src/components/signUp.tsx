@@ -18,9 +18,9 @@ import { CREATE_USER } from '../mutations/signup.muation';
 const defaultTheme = createTheme();
 
 export function SignUp() {
-  const [username, setUsername] = React.useState<string>('username fag')
-  const [email, setEmail] = React.useState<string>('email fag')
-  const [password, setPassword] = React.useState<string>('password fag')
+  const [username, setUsername] = React.useState<string>('username')
+  const [email, setEmail] = React.useState<string>('email')
+  const [password, setPassword] = React.useState<string>('password')
   const [confirmPassword, setConfirmPassword] = React.useState<string>('')
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
 
@@ -30,7 +30,7 @@ export function SignUp() {
     if (password === confirmPassword) {
       console.log('Good job')
     } else {
-      console.log('Your retarded')
+      console.log('Your ')
     }
     const createUserInputs = {
       username,
