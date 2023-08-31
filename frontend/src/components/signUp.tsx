@@ -12,19 +12,43 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useMutation } from '@apollo/react-hooks';
+import { CREATE_USER } from '../mutations/signup.muation';
 
 const defaultTheme = createTheme();
 
 export function SignUp() {
+  const [username, setUsername] = React.useState<string>('username')
+  const [email, setEmail] = React.useState<string>('email')
+  const [password, setPassword] = React.useState<string>('password')
+  const [confirmPassword, setConfirmPassword] = React.useState<string>('')
+  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+    if (password === confirmPassword) {
+      console.log('Good job')
+    } else {
+      console.log('Your ')
+    }
+    const createUserInputs = {
+      username,
+      email,
+      password
+    }
+
+   return createUser({
+    variables: {
+      createUserInputs
+    }
+   })
+
   };
 
+  if (loading) return "Loading..."
+  if (error) return `Error: ${error}`
+  if (data) return `${data}`
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xl">
@@ -53,6 +77,7 @@ export function SignUp() {
                   label="Username"
                   name="username"
                   autoComplete="family-name"
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -63,6 +88,7 @@ export function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -74,6 +100,7 @@ export function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -85,6 +112,7 @@ export function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
