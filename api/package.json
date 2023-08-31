@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "compile": "tsc",
-    "start": "npm run compile && prettier --write 'src/*' && node ./dist/index"
+    "start": "npm run compile && prettier --write \"src/*\" && node ./dist/index"
   },
   "keywords": [],
   "author": "",
