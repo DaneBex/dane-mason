@@ -3,6 +3,7 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
 import winston from "winston";
 import { hash, compare } from "bcrypt";
+import { DateTimeResolver } from "graphql-scalars";
 const prisma = new PrismaClient();
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
@@ -11,11 +12,16 @@ export const typeDefs = `#graphql
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
   # This "User" type defines the queryable fields for every book in our data source.
+
+  scalar DateTime
+
   type User {
     id: String!
     username: String!
     password: String!
     email: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
   }
 
   # The "Query" type is special: it lists all of the available queries that
@@ -45,6 +51,7 @@ export const typeDefs = `#graphql
 // Resolvers define how to fetch the types defined in your schema.
 // This resolver retrieves books from the "books" array above.
 export const resolvers = {
+    DateTime: DateTimeResolver,
     Query: {
         users: async () => {
             return await prisma.user.findMany();
