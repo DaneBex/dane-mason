@@ -54,16 +54,38 @@ export const resolvers = {
     DateTime: DateTimeResolver,
     Query: {
         users: async () => {
-            return await prisma.user.findMany();
+            return await prisma.user.findMany({
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    posts: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            });
         },
         loginUser: async (_parent, args, _contextValue, _info) => {
-            const user = await prisma.user.findFirst({
+            const emailUser = await prisma.user.findFirst({
                 where: {
                     email: args.email,
                 },
             });
-            const correctPassword = await compare(args.password, user.password);
+            const correctPassword = await compare(args.password, emailUser.password);
             if (correctPassword) {
+                const user = await prisma.user.findFirst({
+                    where: {
+                        email: args.email,
+                    },
+                    select: {
+                        id: true,
+                        username: true,
+                        email: true,
+                        posts: true,
+                        createdAt: true,
+                        updatedAt: true,
+                    },
+                });
                 return { user };
             }
             else {
@@ -82,6 +104,14 @@ export const resolvers = {
                     username: username,
                     password: hashedPass,
                     email: email,
+                },
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    posts: true,
+                    createdAt: true,
+                    updatedAt: true,
                 },
             });
         },
