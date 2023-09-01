@@ -1,8 +1,8 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
-import { hash } from "argon2";
 import winston from "winston";
+import { hash, compare } from "bcrypt";
 
 const prisma = new PrismaClient();
 // A schema is a collection of type definitions (hence "typeDefs")
@@ -22,8 +22,15 @@ export const typeDefs = `#graphql
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "books" query returns an array of zero or more Books (defined above).
+
+  type LoginResponse {
+    user: User
+    error: String
+  }
+
   type Query {
     users: [User]
+    loginUser(email: String!, password: String!): LoginResponse
   }
 
   input CreateUserInputs {
@@ -44,11 +51,27 @@ export const resolvers = {
     users: async () => {
       return await prisma.user.findMany();
     },
+    loginUser: async (_parent, args, _contextValue, _info) => {
+      const user = await prisma.user.findFirst({
+        where: {
+          email: args.email,
+        },
+      });
+
+      const correctPassword = await compare(args.password, user.password);
+      if (correctPassword) {
+        return { user };
+      } else {
+        return {
+          error: "come on boss",
+        };
+      }
+    },
   },
   Mutation: {
     createUser: async (_parent, args, _contextValue, _info) => {
       const { username, password, email } = args.createUserInputs;
-      const hashedPass = await hash(password);
+      const hashedPass = await hash(password, 10);
       return await prisma.user.create({
         data: {
           username: username,
