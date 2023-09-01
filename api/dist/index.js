@@ -61,7 +61,7 @@ export const resolvers = {
             }
             else {
                 return {
-                    error: "dumbass",
+                    error: "come on boss",
                 };
             }
         },

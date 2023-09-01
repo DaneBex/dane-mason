@@ -63,7 +63,7 @@ export const resolvers = {
         return { user };
       } else {
         return {
-          error: "dumbass",
+          error: "come on boss",
         };
       }
     },
