@@ -58,12 +58,18 @@ export const resolvers = {
         },
       });
 
+      if (!user) {
+        return {
+          error: "Email not found",
+        };
+      }
+
       const correctPassword = await compare(args.password, user.password);
       if (correctPassword) {
         return { user };
       } else {
         return {
-          error: "come on boss",
+          error: "Password not correct",
         };
       }
     },
