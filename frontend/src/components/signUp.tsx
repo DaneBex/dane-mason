@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useMutation } from '@apollo/react-hooks';
 import { CREATE_USER } from '../mutations/signup.muation';
 import { z } from 'zod'
+import { Home } from './Home';
 
 export const User = z.object({
     username: z.string(),
@@ -30,6 +31,7 @@ export const User = z.object({
 })
 
 const defaultTheme = createTheme();
+export const UserContext = React.createContext<z.infer<typeof User> | null>(null)
 
 export function SignUp() {
   const [username, setUsername] = React.useState<string>('')
@@ -57,7 +59,11 @@ export function SignUp() {
   if (results.success) {
     return createUser({
       variables: {
-        createUserInputs
+        createUserInputs: {
+          username,
+          email,
+          password
+        }
       }
      })
   } else {
@@ -76,12 +82,17 @@ export function SignUp() {
     setEmailError(errorMap.email || '');
     setPasswordError(errorMap.password || '');
     setConfirmPasswordError(errorMap.confirmPassword || '');
-  }
+    }
   };
 
-  if (loading) return "Loading..."
-  if (error) return `Error: ${error}`
-  if (data) return `${data}`
+  if (data) {
+    return (
+      <UserContext.Provider value={data.createUser} >
+        <Home />
+      </UserContext.Provider>
+    )
+  }
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xl">
@@ -173,6 +184,8 @@ export function SignUp() {
               </Grid>
             </Grid>
           </Box>
+          {loading ? <Box>Loading...</Box> : null}
+          {error ? <Box>Something went wrong. Try again</Box> : null}
         </Box>
       </Container>
     </ThemeProvider>
