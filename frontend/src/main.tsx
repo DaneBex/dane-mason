@@ -6,6 +6,8 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { SignIn } from "./components/SignIn";
 import { SignUp } from "./components/SignUp";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
@@ -26,7 +28,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <RouterProvider router={router} />
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </ApolloProvider>
   </React.StrictMode>,
 );

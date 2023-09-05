@@ -1,6 +1,4 @@
-// import "./App.css";
-// import "./App.css";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTheme, ThemeProvider } from "@mui/material/styles";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,12 +12,12 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 
-const defaultTheme = createTheme();
-
 export function SignIn() {
   const handleSubmit = () => {
     console.log("To Be Completed");
   };
+
+  const defaultTheme = useTheme();
 
   return (
     <ThemeProvider theme={defaultTheme}>
