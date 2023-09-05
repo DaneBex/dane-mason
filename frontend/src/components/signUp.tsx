@@ -15,7 +15,7 @@ import { CREATE_USER } from '../mutations/signup.muation';
 import { z } from 'zod'
 import { Home } from './Home';
 
-export const User = z.object({
+export const SignupValidate = z.object({
     username: z.string(),
     email: z.string().email(),
     password: z.string().min(8),
@@ -55,7 +55,7 @@ export function SignUp() {
       confirmPassword
     }
 
-  const results = User.safeParse(createUserInputs)
+  const results = SignupValidate.safeParse(createUserInputs)
 
   if (results.success) {
     return createUser({
