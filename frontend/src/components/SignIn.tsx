@@ -12,60 +12,60 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { z } from "zod";
-import React from 'react';
+import React from "react";
 import { useLazyQuery } from "@apollo/react-hooks";
 import { SIGNIN_USER } from "../queries/signin.query";
 
 export const SignInValidate = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-})
+});
 
 export function SignIn() {
-  const [email, setEmail] = React.useState<string>('')
-  const [emailError, setEmailError] = React.useState<string>('')
-  const [password, setPassword] = React.useState<string>('')
-  const [passwordError, setPasswordError] = React.useState<string>('')
-  const [login, { loading, data, error }] = useLazyQuery(SIGNIN_USER)
+  const [email, setEmail] = React.useState<string>("");
+  const [emailError, setEmailError] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const [passwordError, setPasswordError] = React.useState<string>("");
+  const [login, { loading, data, error }] = useLazyQuery(SIGNIN_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const results = SignInValidate.safeParse({
       email,
-      password
-    })
+      password,
+    });
 
     if (results.success) {
       return login({
         variables: {
           email,
-          password
-        }
-      })
+          password,
+        },
+      });
     } else {
       const errorMap: Record<string, string> = {};
 
-      results.error.errors.forEach(error => {
-      const errorPath = error.path[0];
-      const errorMessage = error.message;
+      results.error.errors.forEach((error) => {
+        const errorPath = error.path[0];
+        const errorMessage = error.message;
 
-      if (errorPath) {
-        errorMap[errorPath] = errorMessage;
-      }
-    });
-    setEmailError(errorMap.email || '');
-    setPasswordError(errorMap.password || '');
+        if (errorPath) {
+          errorMap[errorPath] = errorMessage;
+        }
+      });
+      setEmailError(errorMap.email || "");
+      setPasswordError(errorMap.password || "");
     }
   };
 
   const defaultTheme = useTheme();
 
-   if (data) {
-    console.log(data)
+  if (data) {
+    console.log(data);
   }
   if (error) {
-    console.log(error)
+    console.log(error);
   }
 
   return (
@@ -134,8 +134,8 @@ export function SignIn() {
                 id="password"
                 autoComplete="current-password"
                 onChange={(e) => setPassword(e.target.value)}
-                  error={passwordError ? true : false}
-                  helperText={passwordError}
+                error={passwordError ? true : false}
+                helperText={passwordError}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
