@@ -6,9 +6,15 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useTheme, ThemeProvider } from '@emotion/react';
+
 
 export function Navbar() {
+
+    const defaultTheme = useTheme();
+
   return (
+    <ThemeProvider theme={defaultTheme}>
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
@@ -28,5 +34,6 @@ export function Navbar() {
         </Toolbar>
       </AppBar>
     </Box>
+    </ThemeProvider>
   );
 }
