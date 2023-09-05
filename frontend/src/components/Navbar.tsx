@@ -34,7 +34,6 @@ export function Navbar() {
         </Toolbar>
       </AppBar>
     </Box>
-
     </ThemeProvider>
   );
 }
