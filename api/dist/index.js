@@ -71,6 +71,11 @@ export const resolvers = {
                     email: args.email,
                 },
             });
+            if (!emailUser) {
+                return {
+                    error: "Email not found",
+                };
+            }
             const correctPassword = await compare(args.password, emailUser.password);
             if (correctPassword) {
                 const user = await prisma.user.findFirst({
@@ -84,13 +89,14 @@ export const resolvers = {
                         posts: true,
                         createdAt: true,
                         updatedAt: true,
+                        password: false,
                     },
                 });
                 return { user };
             }
             else {
                 return {
-                    error: "come on boss",
+                    error: "Password not correct",
                 };
             }
         },

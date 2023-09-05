@@ -75,6 +75,12 @@ export const resolvers = {
         },
       });
 
+      if (!emailUser) {
+        return {
+          error: "Email not found",
+        };
+      }
+
       const correctPassword = await compare(args.password, emailUser.password);
 
       if (correctPassword) {
@@ -89,13 +95,13 @@ export const resolvers = {
             posts: true,
             createdAt: true,
             updatedAt: true,
+            password: false,
           },
         });
-
         return { user };
       } else {
         return {
-          error: "come on boss",
+          error: "Password not correct",
         };
       }
     },

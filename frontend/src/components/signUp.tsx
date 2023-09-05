@@ -17,7 +17,7 @@ import { Home } from './Home';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-export const User = z.object({
+export const SignupValidate = z.object({
     username: z.string(),
     email: z.string().email(),
     password: z.string().min(8),
@@ -33,7 +33,7 @@ export const User = z.object({
 })
 
 const defaultTheme = createTheme();
-export const UserContext = React.createContext<z.infer<typeof User> | null>(null)
+export const UserContext = React.createContext<z.infer<typeof SignupValidate> | null>(null)
 
 export function SignUp() {
   const [username, setUsername] = React.useState<string>('')
@@ -56,7 +56,7 @@ export function SignUp() {
       confirmPassword
     }
 
-  const results = User.safeParse(createUserInputs)
+  const results = SignupValidate.safeParse(createUserInputs)
 
   if (results.success) {
     return createUser({
