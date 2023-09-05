@@ -61,7 +61,6 @@ export function SignIn() {
     }
   };
 
-  // if (loading) return "loading..."
   if (data) {
     console.log(data)
   }

@@ -66,7 +66,6 @@ export const resolvers = {
             });
         },
         loginUser: async (_parent, args, _contextValue, _info) => {
-            console.log(args);
             const emailUser = await prisma.user.findFirst({
                 where: {
                     email: args.email,
@@ -78,7 +77,6 @@ export const resolvers = {
                 };
             }
             const correctPassword = await compare(args.password, emailUser.password);
-            console.log("Correct Pass: ", correctPassword);
             if (correctPassword) {
                 const user = await prisma.user.findFirst({
                     where: {
@@ -94,7 +92,6 @@ export const resolvers = {
                         password: false,
                     },
                 });
-                console.log("User: ", user);
                 return { user };
             }
             else {
