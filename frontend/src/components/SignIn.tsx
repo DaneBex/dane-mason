@@ -1,4 +1,4 @@
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTheme, ThemeProvider } from "@mui/material/styles";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,8 +15,6 @@ import { z } from "zod";
 import React from 'react';
 import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 import { SIGNIN_USER } from "../queries/signin.query";
-
-const defaultTheme = createTheme();
 
 export const SignInValidate = z.object({
   email: z.string().email(),
@@ -61,7 +59,9 @@ export function SignIn() {
     }
   };
 
-  if (data) {
+  const defaultTheme = useTheme();
+
+   if (data) {
     console.log(data)
   }
   if (error) {

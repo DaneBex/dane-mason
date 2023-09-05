@@ -9,13 +9,11 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import { useMutation } from '@apollo/react-hooks';
 import { CREATE_USER } from '../mutations/signup.muation';
 import { z } from 'zod'
 import { Home } from './Home';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 
 export const SignupValidate = z.object({
     username: z.string(),
@@ -32,8 +30,7 @@ export const SignupValidate = z.object({
   }
 })
 
-const defaultTheme = createTheme();
-export const UserContext = React.createContext<z.infer<typeof SignupValidate> | null>(null)
+export const UserContext = React.createContext<z.infer<typeof User> | null>(null)
 
 export function SignUp() {
   const [username, setUsername] = React.useState<string>('')
@@ -45,6 +42,8 @@ export function SignUp() {
   const [confirmPassword, setConfirmPassword] = React.useState<string>('')
   const [confirmPasswordError, setConfirmPasswordError] = React.useState<string>('')
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+
+  const defaultTheme = useTheme();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
