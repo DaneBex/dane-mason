@@ -1,46 +1,51 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { useTheme, ThemeProvider } from '@mui/material/styles';
-import { useMutation } from '@apollo/react-hooks';
-import { CREATE_USER } from '../mutations/signup.muation';
-import { z } from 'zod'
-import { Home } from './Home';
+import * as React from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import { useTheme, ThemeProvider } from "@mui/material/styles";
+import { useMutation } from "@apollo/react-hooks";
+import { CREATE_USER } from "../mutations/signup.muation";
+import { z } from "zod";
+import { Home } from "./Home";
 
-export const SignupValidate = z.object({
+export const SignupValidate = z
+  .object({
     username: z.string(),
     email: z.string().email(),
     password: z.string().min(8),
     confirmPassword: z.string().min(8),
-}).superRefine(({ confirmPassword, password }, ctx) => {
-  if (confirmPassword !== password) {
-    ctx.addIssue({
-      path: ['confirmPassword'],
-      code: 'custom',
-      message: 'The passwords did not match'
-    })
-  }
-})
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        path: ["confirmPassword"],
+        code: "custom",
+        message: "The passwords did not match",
+      });
+    }
+  });
 
-export const UserContext = React.createContext<z.infer<typeof User> | null>(null)
+export const UserContext = React.createContext<z.infer<typeof User> | null>(
+  null,
+);
 
 export function SignUp() {
-  const [username, setUsername] = React.useState<string>('')
-  const [usernameError, setUsernameError] = React.useState<string>('')
-  const [email, setEmail] = React.useState<string>('')
-  const [emailError, setEmailError] = React.useState<string>('')
-  const [password, setPassword] = React.useState<string>('')
-  const [passwordError, setPasswordError] = React.useState<string>('')
-  const [confirmPassword, setConfirmPassword] = React.useState<string>('')
-  const [confirmPasswordError, setConfirmPasswordError] = React.useState<string>('')
+  const [username, setUsername] = React.useState<string>("");
+  const [usernameError, setUsernameError] = React.useState<string>("");
+  const [email, setEmail] = React.useState<string>("");
+  const [emailError, setEmailError] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const [passwordError, setPasswordError] = React.useState<string>("");
+  const [confirmPassword, setConfirmPassword] = React.useState<string>("");
+  const [confirmPasswordError, setConfirmPasswordError] =
+    React.useState<string>("");
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
 
   const defaultTheme = useTheme();
@@ -52,69 +57,78 @@ export function SignUp() {
       username,
       email,
       password,
-      confirmPassword
-    }
+      confirmPassword,
+    };
 
-  const results = SignupValidate.safeParse(createUserInputs)
+    const results = SignupValidate.safeParse(createUserInputs);
 
-  if (results.success) {
-    return createUser({
-      variables: {
-        createUserInputs: {
-          username,
-          email,
-          password
+    if (results.success) {
+      return createUser({
+        variables: {
+          createUserInputs: {
+            username,
+            email,
+            password,
+          },
+        },
+      });
+    } else {
+      const errorMap: Record<string, string> = {};
+
+      results.error.errors.forEach((error) => {
+        const errorPath = error.path[0];
+        const errorMessage = error.message;
+
+        if (errorPath) {
+          errorMap[errorPath] = errorMessage;
         }
-      }
-     })
-  } else {
-    const errorMap: Record<string, string> = {};
+      });
 
-    results.error.errors.forEach(error => {
-      const errorPath = error.path[0];
-      const errorMessage = error.message;
-
-      if (errorPath) {
-        errorMap[errorPath] = errorMessage;
-      }
-    });
-
-    setUsernameError(errorMap.username || '');
-    setEmailError(errorMap.email || '');
-    setPasswordError(errorMap.password || '');
-    setConfirmPasswordError(errorMap.confirmPassword || '');
+      setUsernameError(errorMap.username || "");
+      setEmailError(errorMap.email || "");
+      setPasswordError(errorMap.password || "");
+      setConfirmPasswordError(errorMap.confirmPassword || "");
     }
   };
 
   if (data) {
     return (
-      <UserContext.Provider value={data.createUser} >
+      <UserContext.Provider value={data.createUser}>
         <Home />
       </UserContext.Provider>
-    )
+    );
   }
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xl" sx={{
-               width: '100vw'
-      }}>
+      <Container
+        component="main"
+        maxWidth="xl"
+        sx={{
+          width: "100vw",
+        }}
+      >
         <CssBaseline />
         <Box
           sx={{
             margin: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -171,8 +185,8 @@ export function SignUp() {
                 />
               </Grid>
               <Grid item xs={12}>
-   <div style={{ height: 'someValue' }}> </div>
-</Grid>
+                <div style={{ height: "someValue" }}> </div>
+              </Grid>
             </Grid>
             <Button
               type="submit"
@@ -197,7 +211,3 @@ export function SignUp() {
     </ThemeProvider>
   );
 }
-
-
-
-
