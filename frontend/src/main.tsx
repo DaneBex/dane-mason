@@ -6,6 +6,7 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { SignIn } from "./components/SignIn";
 import { SignUp } from "./components/SignUp";
+import { Home } from "./components/Home";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: "/sign-up",
     element: <SignUp />,
+  },
+  {
+    path: "/",
+    element: <Home />,
   },
 ]);
 
