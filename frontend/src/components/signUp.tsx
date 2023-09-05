@@ -14,6 +14,8 @@ import { useMutation } from '@apollo/react-hooks';
 import { CREATE_USER } from '../mutations/signup.muation';
 import { z } from 'zod'
 import { Home } from './Home';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 export const User = z.object({
     username: z.string(),
@@ -95,7 +97,9 @@ export function SignUp() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xl">
+      <Container component="main" maxWidth="xl" sx={{
+               width: '100vw'
+      }}>
         <CssBaseline />
         <Box
           sx={{
@@ -167,6 +171,9 @@ export function SignUp() {
                   helperText={confirmPasswordError}
                 />
               </Grid>
+              <Grid item xs={12}>
+   <div style={{ height: 'someValue' }}> </div>
+</Grid>
             </Grid>
             <Button
               type="submit"
