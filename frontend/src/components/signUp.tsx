@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -14,41 +12,87 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useMutation } from '@apollo/react-hooks';
 import { CREATE_USER } from '../mutations/signup.muation';
+import { z } from 'zod'
+import { Home } from './Home';
+
+export const SignupValidate = z.object({
+    username: z.string(),
+    email: z.string().email(),
+    password: z.string().min(8),
+    confirmPassword: z.string().min(8),
+}).superRefine(({ confirmPassword, password }, ctx) => {
+  if (confirmPassword !== password) {
+    ctx.addIssue({
+      path: ['confirmPassword'],
+      code: 'custom',
+      message: 'The passwords did not match'
+    })
+  }
+})
 
 const defaultTheme = createTheme();
+export const UserContext = React.createContext<z.infer<typeof SignupValidate> | null>(null)
 
 export function SignUp() {
-  const [username, setUsername] = React.useState<string>('username')
-  const [email, setEmail] = React.useState<string>('email')
-  const [password, setPassword] = React.useState<string>('password')
+  const [username, setUsername] = React.useState<string>('')
+  const [usernameError, setUsernameError] = React.useState<string>('')
+  const [email, setEmail] = React.useState<string>('')
+  const [emailError, setEmailError] = React.useState<string>('')
+  const [password, setPassword] = React.useState<string>('')
+  const [passwordError, setPasswordError] = React.useState<string>('')
   const [confirmPassword, setConfirmPassword] = React.useState<string>('')
+  const [confirmPasswordError, setConfirmPasswordError] = React.useState<string>('')
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (password === confirmPassword) {
-      console.log('Good job')
-    } else {
-      console.log('Your ')
-    }
     const createUserInputs = {
       username,
       email,
-      password
+      password,
+      confirmPassword
     }
 
-   return createUser({
-    variables: {
-      createUserInputs
-    }
-   })
+  const results = SignupValidate.safeParse(createUserInputs)
 
+  if (results.success) {
+    return createUser({
+      variables: {
+        createUserInputs: {
+          username,
+          email,
+          password
+        }
+      }
+     })
+  } else {
+    const errorMap: Record<string, string> = {};
+
+    results.error.errors.forEach(error => {
+      const errorPath = error.path[0];
+      const errorMessage = error.message;
+
+      if (errorPath) {
+        errorMap[errorPath] = errorMessage;
+      }
+    });
+
+    setUsernameError(errorMap.username || '');
+    setEmailError(errorMap.email || '');
+    setPasswordError(errorMap.password || '');
+    setConfirmPasswordError(errorMap.confirmPassword || '');
+    }
   };
 
-  if (loading) return "Loading..."
-  if (error) return `Error: ${error}`
-  if (data) return `${data}`
+  if (data) {
+    return (
+      <UserContext.Provider value={data.createUser} >
+        <Home />
+      </UserContext.Provider>
+    )
+  }
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xl">
@@ -78,6 +122,8 @@ export function SignUp() {
                   name="username"
                   autoComplete="family-name"
                   onChange={(e) => setUsername(e.target.value)}
+                  error={usernameError ? true : false}
+                  helperText={usernameError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -89,6 +135,8 @@ export function SignUp() {
                   name="email"
                   autoComplete="email"
                   onChange={(e) => setEmail(e.target.value)}
+                  error={emailError ? true : false}
+                  helperText={emailError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -101,6 +149,8 @@ export function SignUp() {
                   id="password"
                   autoComplete="new-password"
                   onChange={(e) => setPassword(e.target.value)}
+                  error={passwordError ? true : false}
+                  helperText={passwordError}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -113,12 +163,8 @@ export function SignUp() {
                   id="password"
                   autoComplete="new-password"
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                  error={confirmPasswordError ? true : false}
+                  helperText={confirmPasswordError}
                 />
               </Grid>
             </Grid>
@@ -138,6 +184,8 @@ export function SignUp() {
               </Grid>
             </Grid>
           </Box>
+          {loading ? <Box>Loading...</Box> : null}
+          {error ? <Box>Something went wrong. Try again</Box> : null}
         </Box>
       </Container>
     </ThemeProvider>
