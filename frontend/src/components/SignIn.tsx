@@ -13,8 +13,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { z } from "zod";
 import React from "react";
-import { useLazyQuery } from "@apollo/react-hooks";
-import { SIGNIN_USER } from "../queries/signin.query";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { SIGNIN_USER } from "../mutations/signin.mutation";
 
 export const SignInValidate = z.object({
   email: z.string().email(),
@@ -26,7 +26,7 @@ export function SignIn() {
   const [emailError, setEmailError] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [passwordError, setPasswordError] = React.useState<string>("");
-  const [login, { loading, data, error }] = useLazyQuery(SIGNIN_USER);
+  const [login, { data, loading, error }] = useMutation(SIGNIN_USER);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,10 +62,12 @@ export function SignIn() {
   const defaultTheme = useTheme();
 
   if (data) {
-    console.log(data);
-  }
-  if (error) {
-    console.log(error);
+    localStorage.setItem('AUTH_TOKEN', data.createUser.token);
+    return (
+      <UserContext.Provider value={data.createUser.user}>
+        <Home />
+      </UserContext.Provider>
+    );
   }
 
   return (

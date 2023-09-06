@@ -32,7 +32,7 @@ export const SignupValidate = z
     }
   });
 
-export const UserContext = React.createContext<z.infer<typeof User> | null>(
+export const UserContext = React.createContext<z.infer<typeof SignupValidate> | null>(
   null,
 );
 
@@ -92,8 +92,9 @@ export function SignUp() {
   };
 
   if (data) {
+    localStorage.setItem('AUTH_TOKEN', data.createUser.token);
     return (
-      <UserContext.Provider value={data.createUser}>
+      <UserContext.Provider value={data.createUser.user}>
         <Home />
       </UserContext.Provider>
     );
