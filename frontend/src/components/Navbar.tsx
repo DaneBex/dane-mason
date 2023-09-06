@@ -11,8 +11,8 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
 import { ThemeProvider, useTheme } from "@mui/material/styles";
+import logo from "../images/EconEcho.png";
 
 export function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -47,8 +47,10 @@ export function Navbar() {
       <AppBar position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* Img here */}
-
+            <img
+              src={logo}
+              style={{ height: "90px", borderRadius: "50%", padding: "12px" }}
+            />
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"
