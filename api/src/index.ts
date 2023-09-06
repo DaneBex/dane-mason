@@ -16,18 +16,73 @@ export const typeDefs = `#graphql
 
   scalar DateTime
 
+  enum Sex {
+    MALE
+    FEMALE
+  }
+
+  enum Race {
+    WHITE
+    BLACK
+    HISPANIC
+    AMERICAN-INDIAN
+    ASIAN
+  }
+
+  enum Income {
+    ZERO
+    TWENTY
+    FIFTY
+    EIGHTY
+  }
+
   type User {
     id: String!
+
     username: String!
     password: String!
     email: String!
+
+    profile_pic_url: String!
+
+    age: Number!
+    sex: Sex!
+    race: Race
+    income: Income
+    married: Boolean
+
     createdAt: DateTime!
     updatedAt: DateTime!
   }
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
+  type Business {
+    id: String!
+
+    name: String!
+    street: String!
+    city: String!
+    state: String!
+    postal_code: String!
+
+    phone: Number!
+    email: String!
+    website: String
+
+  }
+
+  enum ACHIEVMENT_TIER {
+    BRONZE
+    SILVER
+    GOLD
+    PLATINUM
+  }
+
+  type Achievment {
+    id: String!
+
+    name: String!
+    description: String!
+  }
 
   type LoginResponse {
     user: User
