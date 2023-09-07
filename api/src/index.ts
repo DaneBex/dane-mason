@@ -4,146 +4,164 @@ import { PrismaClient } from "@prisma/client";
 import winston from "winston";
 import { hash, compare } from "bcrypt";
 import { DateTimeResolver, GraphQLJSON } from "graphql-scalars";
-import { sign } from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET
+const { sign } = jwt;
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const prisma = new PrismaClient();
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
-export const typeDefs = `#graphql
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
-  # This "User" type defines the queryable fields for every book in our data source.
+export const typeDefs = `#graphql
 
   scalar Date
   scalar JSON
 
-  enum Sex {
-    MALE
-    FEMALE
-  }
-
-  enum Race {
-    WHITE
-    BLACK
-    HISPANIC
-    AMERICAN_INDIAN
-    ASIAN
-  }
-
-  enum Income {
-    ZERO
-    TWENTY
-    FIFTY
-    EIGHTY
-  }
-
-  enum BusinessTags {
-    ORGANIC
-    FAMILY_OWNED
-    PET_FRIENDLY
-    LIVE_MUSIC
-  }
-
-  enum PaymentOptions {
-    CREDIT_CARD
-    CASH
-    MOBILE_PAYMENT
-    ONLINE_TRANSFER
-  }
-
   type User {
-    id: ID!
+  id: ID!
 
-    username: String!
-    password: String!
-    email: String!
+  username: String!
+  email: String!
+  profileImg: String
+  age: Int
+  sex: Sex
+  race: Race
+  income: Income
+  married: Boolean
+  reviews: [Review!]
+  comments: [Comment!]
+  achievements: [Achievement!]
+  favoriteBusinesses: [Business!]
+  ownedBusinesses: [Business!]
+  echoes: Int!
 
-    profileImg: String
+  createdAt: String!
+  updatedAt: String!
+}
 
-    age: Int
-    sex: Sex
-    race: Race
-    income: Income
-    married: Boolean
+type Business {
+  id: ID!
+  name: String!
+  street: String!
+  city: String!
+  state: String!
+  postalCode: String!
+  description: String!
+  logo: String
+  gallery: [String!]
+  hoursOfOperation: [HoursOfOperation!]
+  reviews: [Review!]
+  rating: Float
+  specialOffers: [JSON!]
+  achievements: [Achievement!]
+  favoritedBy: [User!]
+  facebook: String
+  instagram: String
+  x: String
+  owners: [User!]
+  tags: [BusinessTags!]
+  events: [String!]
+  paymentOptions: [PaymentOptions!]
+  phone: Int!
+  email: String!
+  website: String
+  createdAt: String!
+  updatedAt: String!
+}
 
-    reviews: [Review!]
-    achievments: [Achievment!]
-    favoriteBusinesses: [Business!]
-    echoes: Int!
-
-    createdAt: Date!
-    updatedAt: Date!
-  }
-
-  type Business {
-    id: ID!
-
-    name: String!
-    street: String!
-    city: String!
-    state: String!
-    postalCode: String!
-    description: String!
-    logo: String
-    gallery: [String]
-    hoursOfOperation: HoursOfOperation
-    reviews: [Review!]
-    rating: Float
-    specialOffers: [JSON!]
-    achievments: [Achievment!]
-    favoritedAmount: Int!
-
-    facebook: String
-    instagram: String
-    x: String
-
-    owners: [User!]
-    tags: [BusinessTags!]
-    events: [String!]
-    paymentOptions: [PaymentOptions!]
-
-    phone: Int!
-    email: String!
-    website: String
-
-    createdAt: Date!
-    updatedAt: Date!
-  }
-
-  type Review {
-    id: ID!
-
-    content: String!  
-    rating: Float!     
-    author: User!         
-    business: Business!   
-    photos: [String!]
-    likes: Int
-    comments: [Comment]
-    reports: [String!]
-
-    createdAt: Date!    
-    updatedAt: Date!
+type Review {
+  id: ID!
+  content: String!
+  rating: Float!
+  author: User!
+  business: Business!
+  photos: [String!]
+  likes: Int!
+  comments: [Comment!]
+  reports: [String!]
+  createdAt: String!
+  updatedAt: String!
 }
 
 type Comment {
-    id: ID!
-
-    content: String!
-    createdAt: String!
-    updatedAt: String?
-    author: User!
-    review: Review!
-    likes: Int!
-
-    createdAt: Date!
-    updatedAt: Date!
+  id: ID!
+  content: String!
+  review: Review!
+  author: User!
+  likes: Int!
+  createdAt: String!
+  updatedAt: String!
 }
 
-  type HoursOfOperation {
+type Achievement {
+  id: ID!
+  name: String!
+  description: String!
+  criteria: JSON!
+  icon: String!
+  echoes: Int!
+  tier: AchievementTier!
+  unlockMessage: String!
+  isActive: Boolean!
+  expireDate: String
+  business: Business
+  usersUnlocked: [User!]
+  relatedFrom: [Achievement!]
+  relatedTo: [Achievement!]
+  type: AchievementType
+  createdAt: String!
+  updatedAt: String!
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum Race {
+  WHITE
+  BLACK
+  HISPANIC
+  AMERICAN_INDIAN
+  ASIAN
+}
+
+enum Income {
+  ZERO
+  TWENTY
+  FIFTY
+  EIGHTY
+}
+
+enum BusinessTags {
+  ORGANIC
+  FAMILY_OWNED
+  PET_FRIENDLY
+  LIVE_MUSIC
+}
+
+enum PaymentOptions {
+  CREDIT_CARD
+  CASH
+  MOBILE_PAYMENT
+  ONLINE_TRANSFER
+}
+
+enum AchievementTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum AchievementType {
+  SHOPPING
+  EVENTS
+  PROMOTIONS
+  HOLIDAY
+}
+
+type HoursOfOperation {
     monday: String!
     tuesday: String!
     wednesday: String!
@@ -151,41 +169,6 @@ type Comment {
     friday: String!
     saturday: String!
     sunday: String!
-  }
-
-  enum Achievment_Tier {
-    BRONZE
-    SILVER
-    GOLD
-    PLATINUM
-  }
-
-  enum Achievment_Type {
-    SHOPPING
-    EVENTS
-    PROMOTIONS
-    HOLIDAY
-  }
-
-  type Achievment {
-    id: ID!
-
-    name: String!
-    description: String!
-    criteria: JSON!
-    icon: String!
-    echoes: Int!
-    tier: Achievment_Tier!
-    unlockMessage: String!
-    isActive: Boolean!
-    exipreDate: Date
-    business: Business
-    usersUnlocked: Int!
-    relatedAchievments: [Achievment]
-    type: Achievment_Type
-
-    createdAt: Date!
-    updatedAt: Date!
   }
 
   type Query {
@@ -217,19 +200,10 @@ type SignInPayload {
 
 export const resolvers = {
   Date: DateTimeResolver,
-  JSON : GraphQLJSON,
+  JSON: GraphQLJSON,
   Query: {
     users: async () => {
-      return await prisma.user.findMany({
-        select: {
-          id: true,
-          username: true,
-          email: true,
-          posts: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      });
+      return await prisma.user.findMany();
     },
   },
   Mutation: {
@@ -242,30 +216,21 @@ export const resolvers = {
           password: hashedPass,
           email: email,
         },
-        select: {
-          id: true,
-          username: true,
-          email: true,
-          posts: true,
-          createdAt: true,
-          updatedAt: true,
-        },
       });
 
       const token = sign({ userId: user.id }, JWT_SECRET, {
-        expiresIn: "1d"
-     });
+        expiresIn: "1d",
+      });
 
-     return {
+      return {
         user,
-        token
-     };
+        token,
+      };
     },
     loginUser: async (_parent, args, _contextValue, _info) => {
       const emailUser = await prisma.user.findFirst({
-        where: {
-          email: args.email,
-        },
+        where: { email: args.email },
+        select: { id: true, email: true, password: true },
       });
 
       if (!emailUser) {
@@ -281,22 +246,13 @@ export const resolvers = {
           where: {
             email: args.email,
           },
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            posts: true,
-            createdAt: true,
-            updatedAt: true,
-            password: false,
-          },
         });
 
         const token = sign({ userId: user.id }, JWT_SECRET, {
-          expiresIn: "1d"
-      });
+          expiresIn: "1d",
+        });
 
-        return { 
+        return {
           user,
           token,
         };

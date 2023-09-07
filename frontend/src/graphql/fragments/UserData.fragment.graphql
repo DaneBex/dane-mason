@@ -1,0 +1,25 @@
+
+fragment UserData on User {
+    id
+      username
+      email
+      createdAt
+      profileImg
+      age
+      sex
+      race
+      income
+      married
+      reviews {
+        id
+      }
+      achievements {
+        id
+      }
+      favoriteBusinesses {
+        id
+      }
+      echoes
+      createdAt
+      updatedAt
+}

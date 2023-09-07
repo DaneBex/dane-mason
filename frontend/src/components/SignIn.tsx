@@ -13,8 +13,10 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { z } from "zod";
 import React from "react";
-import { useLazyQuery, useMutation } from "@apollo/react-hooks";
-import { SIGNIN_USER } from "../mutations/signin.mutation";
+import { useMutation } from "@apollo/react-hooks";
+import { UserContext } from "./SignUp";
+import { Home } from "./Home";
+import { LoginUserDocument } from "../__generated__/graphql";
 
 export const SignInValidate = z.object({
   email: z.string().email(),
@@ -26,7 +28,7 @@ export function SignIn() {
   const [emailError, setEmailError] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [passwordError, setPasswordError] = React.useState<string>("");
-  const [login, { data, loading, error }] = useMutation(SIGNIN_USER);
+  const [login, { data }] = useMutation(LoginUserDocument);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,10 +63,10 @@ export function SignIn() {
 
   const defaultTheme = useTheme();
 
-  if (data) {
-    localStorage.setItem('AUTH_TOKEN', data.createUser.token);
+  if (data?.loginUser?.token && data.loginUser.user) {
+    localStorage.setItem("AUTH_TOKEN", data?.loginUser.token);
     return (
-      <UserContext.Provider value={data.createUser.user}>
+      <UserContext.Provider value={data.loginUser?.user}>
         <Home />
       </UserContext.Provider>
     );

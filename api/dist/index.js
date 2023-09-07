@@ -3,39 +3,172 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { PrismaClient } from "@prisma/client";
 import winston from "winston";
 import { hash, compare } from "bcrypt";
-import { DateTimeResolver } from "graphql-scalars";
+import { DateTimeResolver, GraphQLJSON } from "graphql-scalars";
+import jwt from "jsonwebtoken";
+const { sign } = jwt;
+const JWT_SECRET = process.env.JWT_SECRET;
 const prisma = new PrismaClient();
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
 export const typeDefs = `#graphql
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
-  # This "User" type defines the queryable fields for every book in our data source.
-
-  scalar DateTime
+  scalar Date
+  scalar JSON
 
   type User {
-    id: String!
-    username: String!
-    password: String!
-    email: String!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-  }
+  id: ID!
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
+  username: String!
+  email: String!
+  profileImg: String
+  age: Int
+  sex: Sex
+  race: Race
+  income: Income
+  married: Boolean
+  reviews: [Review!]
+  comments: [Comment!]
+  achievements: [Achievement!]
+  favoriteBusinesses: [Business!]
+  ownedBusinesses: [Business!]
+  echoes: Int!
 
-  type LoginResponse {
-    user: User
-    error: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Business {
+  id: ID!
+  name: String!
+  street: String!
+  city: String!
+  state: String!
+  postalCode: String!
+  description: String!
+  logo: String
+  gallery: [String!]
+  hoursOfOperation: [HoursOfOperation!]
+  reviews: [Review!]
+  rating: Float
+  specialOffers: [JSON!]
+  achievements: [Achievement!]
+  favoritedBy: [User!]
+  facebook: String
+  instagram: String
+  x: String
+  owners: [User!]
+  tags: [BusinessTags!]
+  events: [String!]
+  paymentOptions: [PaymentOptions!]
+  phone: Int!
+  email: String!
+  website: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Review {
+  id: ID!
+  content: String!
+  rating: Float!
+  author: User!
+  business: Business!
+  photos: [String!]
+  likes: Int!
+  comments: [Comment!]
+  reports: [String!]
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  review: Review!
+  author: User!
+  likes: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Achievement {
+  id: ID!
+  name: String!
+  description: String!
+  criteria: JSON!
+  icon: String!
+  echoes: Int!
+  tier: AchievementTier!
+  unlockMessage: String!
+  isActive: Boolean!
+  expireDate: String
+  business: Business
+  usersUnlocked: [User!]
+  relatedFrom: [Achievement!]
+  relatedTo: [Achievement!]
+  type: AchievementType
+  createdAt: String!
+  updatedAt: String!
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum Race {
+  WHITE
+  BLACK
+  HISPANIC
+  AMERICAN_INDIAN
+  ASIAN
+}
+
+enum Income {
+  ZERO
+  TWENTY
+  FIFTY
+  EIGHTY
+}
+
+enum BusinessTags {
+  ORGANIC
+  FAMILY_OWNED
+  PET_FRIENDLY
+  LIVE_MUSIC
+}
+
+enum PaymentOptions {
+  CREDIT_CARD
+  CASH
+  MOBILE_PAYMENT
+  ONLINE_TRANSFER
+}
+
+enum AchievementTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum AchievementType {
+  SHOPPING
+  EVENTS
+  PROMOTIONS
+  HOLIDAY
+}
+
+type HoursOfOperation {
+    monday: String!
+    tuesday: String!
+    wednesday: String!
+    thursday: String!
+    friday: String!
+    saturday: String!
+    sunday: String!
   }
 
   type Query {
     users: [User]
-    loginUser(email: String!, password: String!): LoginResponse
   }
 
   input CreateUserInputs {
@@ -43,33 +176,54 @@ export const typeDefs = `#graphql
     password: String!
     email: String!
   }
+
+  type AuthPayload {
+   user: User!
+   token: String!
+}
+
+type SignInPayload {
+    user: User
+    token: String
+    error: String
+}
   
   type Mutation {
-    createUser(createUserInputs: CreateUserInputs!): User
+    createUser(createUserInputs: CreateUserInputs!): AuthPayload
+    loginUser(email: String!, password: String!): SignInPayload
   }
 `;
-// Resolvers define how to fetch the types defined in your schema.
-// This resolver retrieves books from the "books" array above.
 export const resolvers = {
-    DateTime: DateTimeResolver,
+    Date: DateTimeResolver,
+    JSON: GraphQLJSON,
     Query: {
         users: async () => {
-            return await prisma.user.findMany({
-                select: {
-                    id: true,
-                    username: true,
-                    email: true,
-                    posts: true,
-                    createdAt: true,
-                    updatedAt: true,
+            return await prisma.user.findMany();
+        },
+    },
+    Mutation: {
+        createUser: async (_parent, args, _contextValue, _info) => {
+            const { username, password, email } = args.createUserInputs;
+            const hashedPass = await hash(password, 10);
+            const user = await prisma.user.create({
+                data: {
+                    username: username,
+                    password: hashedPass,
+                    email: email,
                 },
             });
+            const token = sign({ userId: user.id }, JWT_SECRET, {
+                expiresIn: "1d",
+            });
+            return {
+                user,
+                token,
+            };
         },
         loginUser: async (_parent, args, _contextValue, _info) => {
             const emailUser = await prisma.user.findFirst({
-                where: {
-                    email: args.email,
-                },
+                where: { email: args.email },
+                select: { id: true, email: true, password: true },
             });
             if (!emailUser) {
                 return {
@@ -82,44 +236,20 @@ export const resolvers = {
                     where: {
                         email: args.email,
                     },
-                    select: {
-                        id: true,
-                        username: true,
-                        email: true,
-                        posts: true,
-                        createdAt: true,
-                        updatedAt: true,
-                        password: false,
-                    },
                 });
-                return { user };
+                const token = sign({ userId: user.id }, JWT_SECRET, {
+                    expiresIn: "1d",
+                });
+                return {
+                    user,
+                    token,
+                };
             }
             else {
                 return {
                     error: "Password not correct",
                 };
             }
-        },
-    },
-    Mutation: {
-        createUser: async (_parent, args, _contextValue, _info) => {
-            const { username, password, email } = args.createUserInputs;
-            const hashedPass = await hash(password, 10);
-            return await prisma.user.create({
-                data: {
-                    username: username,
-                    password: hashedPass,
-                    email: email,
-                },
-                select: {
-                    id: true,
-                    username: true,
-                    email: true,
-                    posts: true,
-                    createdAt: true,
-                    updatedAt: true,
-                },
-            });
         },
     },
 };

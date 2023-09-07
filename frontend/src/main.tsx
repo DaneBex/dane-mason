@@ -9,16 +9,16 @@ import { SignUp } from "./components/SignUp";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import { Home } from "./components/Home";
-import { ApolloLink } from '@apollo/react-hooks'
+import { ApolloLink } from "@apollo/react-hooks";
 
-const httpLink = new HttpLink({ uri: 'http://localhost:4000' });
+const httpLink = new HttpLink({ uri: "http://localhost:4000" });
 
 const authLink = new ApolloLink((operation, forward) => {
-  const token = localStorage.getItem('AUTH_TOKEN');
+  const token = localStorage.getItem("AUTH_TOKEN");
   operation.setContext({
-     headers: {
-        authorization: token ? `Bearer ${token}` : ''
-     }
+    headers: {
+      authorization: token ? `Bearer ${token}` : "",
+    },
   });
   return forward(operation);
 });
