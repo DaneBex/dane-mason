@@ -9,7 +9,6 @@ export function Home() {
   const defaultTheme = useTheme();
   const user = useContext(UserContext);
 
-  console.log(user);
   return (
     <ThemeProvider theme={defaultTheme}>
       <Box

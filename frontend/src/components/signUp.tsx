@@ -91,10 +91,6 @@ export function SignUp() {
     }
   };
 
-  if (error) {
-    console.log("error: ", error);
-  }
-
   if (data?.createUser) {
     localStorage.setItem("AUTH_TOKEN", data?.createUser.token);
     return (
