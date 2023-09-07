@@ -10,22 +10,190 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Sex {
+  MALE
+  FEMALE
+}
 
-model Post {
-  id        String     @default(cuid()) @id
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User?   @relation(fields: [authorId], references: [id])
-  authorId  String?
+enum Race {
+  WHITE
+  BLACK
+  HISPANIC
+  AMERICAN_INDIAN
+  ASIAN
+}
+
+enum Income {
+  ZERO
+  TWENTY
+  FIFTY
+  EIGHTY
+}
+
+enum BusinessTags {
+  ORGANIC
+  FAMILY_OWNED
+  PET_FRIENDLY
+  LIVE_MUSIC
+}
+
+enum PaymentOptions {
+  CREDIT_CARD
+  CASH
+  MOBILE_PAYMENT
+  ONLINE_TRANSFER
+}
+
+enum AchievementTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum AchievementType {
+  SHOPPING
+  EVENTS
+  PROMOTIONS
+  HOLIDAY
 }
 
 model User {
-  id            String       @default(cuid()) @id
-  username      String
-  password      String
-  email         String   @unique
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  posts         Post[]
+  id                 String               @id @default(cuid())
+  username           String
+  email              String               @unique
+  password           String
+  profileImg         String?
+  age                Int?
+  sex                Sex?
+  race               Race?
+  income             Income?
+  married            Boolean?
+  reviews            Review[]
+  comments           Comment[]            @relation("UserComments")
+  achievements       UserAchievements[]
+  favoriteBusinesses FavoriteBusinesses[]
+  ownedBusinesses    BusinessOwners[]
+  echoes             Int                  @default(0)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+}
+
+model Business {
+  id               String               @id @default(cuid())
+  name             String
+  street           String
+  city             String
+  state            String
+  postalCode       String
+  description      String
+  logo             String?
+  gallery          String[]
+  hoursOfOperation Json[]
+  reviews          Review[]
+  rating           Float?
+  specialOffers    Json[]
+  achievements     Achievement[]        @relation("BusinessAchievements")
+  favoritedBy      FavoriteBusinesses[]
+  facebook         String?
+  instagram        String?
+  x                String?
+  owners           BusinessOwners[]
+  tags             BusinessTags[]
+  events           String[]
+  paymentOptions   PaymentOptions[]
+  phone            Int
+  email            String
+  website          String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+}
+
+model BusinessOwners {
+  userId     String
+  businessId String
+  user       User     @relation(fields: [userId], references: [id])
+  business   Business @relation(fields: [businessId], references: [id])
+  assignedAt DateTime @default(now())
+
+  @@id([userId, businessId])
+}
+
+model UserAchievements {
+  achievementId String
+  userId        String
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+  assignedAt    DateTime    @default(now())
+
+  @@id([achievementId, userId])
+}
+
+model FavoriteBusinesses {
+  businessId String
+  userId     String
+  business   Business @relation(fields: [businessId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+  assignedAt DateTime @default(now())
+
+  @@id([businessId, userId])
+}
+
+model Review {
+  id         String    @id @default(cuid())
+  content    String
+  rating     Float
+  authorId   String
+  businessId String
+  author     User      @relation(fields: [authorId], references: [id])
+  business   Business  @relation(fields: [businessId], references: [id])
+  photos     String[]
+  likes      Int       @default(0)
+  comments   Comment[] @relation("ReviewComments")
+  reports    String[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  review    Review   @relation("ReviewComments", fields: [reviewId], references: [id])
+  reviewId  String
+  author    User     @relation("UserComments", fields: [authorId], references: [id])
+  authorId  String
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Achievement {
+  id            String             @id @default(cuid())
+  name          String
+  description   String
+  criteria      Json
+  icon          String
+  echoes        Int
+  tier          AchievementTier
+  unlockMessage String
+  isActive      Boolean
+  expireDate    DateTime?
+  business      Business?          @relation("BusinessAchievements", fields: [businessId], references: [id])
+  businessId    String?
+  usersUnlocked UserAchievements[]
+
+  relatedFrom AchievementRelation[] @relation("RelatedFromAchievement")
+  relatedTo   AchievementRelation[] @relation("RelatedToAchievement")
+
+  type      AchievementType?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model AchievementRelation {
+  id                String      @id @default(cuid())
+  fromAchievement   Achievement @relation("RelatedFromAchievement", fields: [fromAchievementId], references: [id])
+  fromAchievementId String
+  toAchievement     Achievement @relation("RelatedToAchievement", fields: [toAchievementId], references: [id])
+  toAchievementId   String
 }

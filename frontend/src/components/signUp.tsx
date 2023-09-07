@@ -11,9 +11,10 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useTheme, ThemeProvider } from "@mui/material/styles";
 import { useMutation } from "@apollo/react-hooks";
-import { CREATE_USER } from "../mutations/signup.muation";
 import { z } from "zod";
 import { Home } from "./Home";
+import { User } from "../__generated__/graphql";
+import { CreateUserDocument } from "../__generated__/graphql";
 
 export const SignupValidate = z
   .object({
@@ -32,9 +33,7 @@ export const SignupValidate = z
     }
   });
 
-export const UserContext = React.createContext<z.infer<typeof User> | null>(
-  null,
-);
+export const UserContext = React.createContext<Partial<User> | null>(null);
 
 export function SignUp() {
   const [username, setUsername] = React.useState<string>("");
@@ -46,7 +45,8 @@ export function SignUp() {
   const [confirmPassword, setConfirmPassword] = React.useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] =
     React.useState<string>("");
-  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  const [createUser, { data, loading, error }] =
+    useMutation(CreateUserDocument);
 
   const defaultTheme = useTheme();
 
@@ -91,9 +91,10 @@ export function SignUp() {
     }
   };
 
-  if (data) {
+  if (data?.createUser) {
+    localStorage.setItem("AUTH_TOKEN", data?.createUser.token);
     return (
-      <UserContext.Provider value={data.createUser}>
+      <UserContext.Provider value={data.createUser.user}>
         <Home />
       </UserContext.Provider>
     );
