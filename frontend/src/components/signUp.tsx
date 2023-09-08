@@ -12,9 +12,9 @@ import Container from "@mui/material/Container";
 import { useTheme, ThemeProvider } from "@mui/material/styles";
 import { useMutation } from "@apollo/react-hooks";
 import { z } from "zod";
-import { Home } from "./Home";
-import { User } from "../__generated__/graphql";
 import { CreateUserDocument } from "../__generated__/graphql";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useUser } from "../app";
 
 export const SignupValidate = z
   .object({
@@ -33,8 +33,6 @@ export const SignupValidate = z
     }
   });
 
-export const UserContext = React.createContext<Partial<User> | null>(null);
-
 export function SignUp() {
   const [username, setUsername] = React.useState<string>("");
   const [usernameError, setUsernameError] = React.useState<string>("");
@@ -47,6 +45,9 @@ export function SignUp() {
     React.useState<string>("");
   const [createUser, { data, loading, error }] =
     useMutation(CreateUserDocument);
+  const [shouldRedirect, setShouldRedirect] = React.useState(false);
+  const { setUser } = useUser();
+  const navigate = useNavigate();
 
   const defaultTheme = useTheme();
 
@@ -91,14 +92,20 @@ export function SignUp() {
     }
   };
 
-  if (data?.createUser) {
-    localStorage.setItem("AUTH_TOKEN", data?.createUser.token);
-    return (
-      <UserContext.Provider value={data.createUser.user}>
-        <Home />
-      </UserContext.Provider>
-    );
-  }
+  React.useEffect(() => {
+    if (data?.createUser?.token && data.createUser.user) {
+      localStorage.setItem("AUTH_TOKEN", data?.createUser.token);
+      localStorage.setItem("USER_DATA", JSON.stringify(data.createUser.user));
+      setUser(data.createUser.user);
+      setShouldRedirect(true);
+    }
+  }, [data, setUser]);
+
+  React.useEffect(() => {
+    if (shouldRedirect) {
+      navigate("/");
+    }
+  }, [navigate, shouldRedirect]);
 
   return (
     <ThemeProvider theme={defaultTheme}>

@@ -1,7 +1,24 @@
-import { createTheme } from "@mui/material/styles";
+import {
+  PaletteColor,
+  PaletteColorOptions,
+  createTheme,
+} from "@mui/material/styles";
+
+declare module "@mui/material/styles" {
+  interface Palette {
+    diamond?: PaletteColor;
+  }
+
+  interface PaletteOptions {
+    diamond?: PaletteColorOptions;
+  }
+}
 
 const theme = createTheme({
   palette: {
+    diamond: {
+      main: "#AFECE7",
+    },
     primary: {
       main: "#60D394",
     },
@@ -20,6 +37,9 @@ const theme = createTheme({
       active: "#EF6461",
     },
     divider: "#CACACA",
+  },
+  typography: {
+    fontFamily: "Lato",
   },
 });
 
