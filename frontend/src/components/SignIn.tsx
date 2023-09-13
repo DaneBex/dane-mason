@@ -12,11 +12,12 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { z } from "zod";
-import React from "react";
-import { useLazyQuery } from "@apollo/react-hooks";
-import { SIGNIN_USER } from "../queries/signin.query";
-import { Carousel } from "./Carousel";
 import logo from "../images/EconEcho.png";
+import React, { useEffect } from "react";
+import { useMutation } from "@apollo/react-hooks";
+import { LoginUserDocument } from "../__generated__/graphql";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../app";
 
 export const SignInValidate = z.object({
   email: z.string().email(),
@@ -28,7 +29,11 @@ export function SignIn() {
   const [emailError, setEmailError] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [passwordError, setPasswordError] = React.useState<string>("");
-  const [login, { loading, data, error }] = useLazyQuery(SIGNIN_USER);
+  const [shouldRedirect, setShouldRedirect] = React.useState(false);
+  const navigate = useNavigate();
+
+  const [login, { data, loading, error }] = useMutation(LoginUserDocument);
+  const { setUser } = useUser();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -63,12 +68,20 @@ export function SignIn() {
 
   const defaultTheme = useTheme();
 
-  if (data) {
-    console.log(data);
-  }
-  if (error) {
-    console.log(error);
-  }
+  useEffect(() => {
+    if (data?.loginUser?.token && data.loginUser.user) {
+      localStorage.setItem("AUTH_TOKEN", data?.loginUser.token);
+      localStorage.setItem("USER_DATA", JSON.stringify(data.loginUser.user));
+      setUser(data.loginUser.user);
+      setShouldRedirect(true);
+    }
+  }, [data, setUser]);
+
+  useEffect(() => {
+    if (shouldRedirect) {
+      navigate("/");
+    }
+  }, [navigate, shouldRedirect]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -151,6 +164,17 @@ export function SignIn() {
                   </Link>
                 </Grid>
               </Grid>
+              {loading ? <Box>Loading...</Box> : null}
+              {data?.loginUser?.error ? (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  marginTop="20px"
+                  color="red"
+                >
+                  {data?.loginUser?.error}
+                </Box>
+              ) : null}
             </Box>
             <Box>
               <img

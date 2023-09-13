@@ -11,9 +11,10 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useTheme, ThemeProvider } from "@mui/material/styles";
 import { useMutation } from "@apollo/react-hooks";
-import { CREATE_USER } from "../mutations/signup.muation";
 import { z } from "zod";
-import { Home } from "./Home";
+import { CreateUserDocument } from "../__generated__/graphql";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useUser } from "../app";
 
 export const SignupValidate = z
   .object({
@@ -32,10 +33,6 @@ export const SignupValidate = z
     }
   });
 
-export const UserContext = React.createContext<z.infer<typeof User> | null>(
-  null,
-);
-
 export function SignUp() {
   const [username, setUsername] = React.useState<string>("");
   const [usernameError, setUsernameError] = React.useState<string>("");
@@ -46,7 +43,11 @@ export function SignUp() {
   const [confirmPassword, setConfirmPassword] = React.useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] =
     React.useState<string>("");
-  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  const [createUser, { data, loading, error }] =
+    useMutation(CreateUserDocument);
+  const [shouldRedirect, setShouldRedirect] = React.useState(false);
+  const { setUser } = useUser();
+  const navigate = useNavigate();
 
   const defaultTheme = useTheme();
 
@@ -91,13 +92,20 @@ export function SignUp() {
     }
   };
 
-  if (data) {
-    return (
-      <UserContext.Provider value={data.createUser}>
-        <Home />
-      </UserContext.Provider>
-    );
-  }
+  React.useEffect(() => {
+    if (data?.createUser?.token && data.createUser.user) {
+      localStorage.setItem("AUTH_TOKEN", data?.createUser.token);
+      localStorage.setItem("USER_DATA", JSON.stringify(data.createUser.user));
+      setUser(data.createUser.user);
+      setShouldRedirect(true);
+    }
+  }, [data, setUser]);
+
+  React.useEffect(() => {
+    if (shouldRedirect) {
+      navigate("/");
+    }
+  }, [navigate, shouldRedirect]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -174,10 +182,10 @@ export function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  name="password"
+                  name="confirm-password"
                   label="Confirm Password"
                   type="password"
-                  id="password"
+                  id="confirm-password"
                   autoComplete="new-password"
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   error={confirmPasswordError ? true : false}
