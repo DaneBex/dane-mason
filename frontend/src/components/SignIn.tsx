@@ -12,11 +12,13 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { z } from "zod";
+import logo from "../images/EconEcho.png";
 import React, { useEffect } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { LoginUserDocument } from "../__generated__/graphql";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../app";
+import { Carousel } from "./Carousel";
 
 export const SignInValidate = z.object({
   email: z.string().email(),
@@ -84,26 +86,27 @@ export function SignIn() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Grid container component="main" sx={{ height: "100vh", width: "100vw" }}>
+      <Grid
+        container
+        component="main"
+        sx={{
+          height: "100vh",
+          width: "100vw",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "row-reverse",
+        }}
+      >
         <CssBaseline />
         <Grid
           item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage:
-              "url(https://source.unsplash.com/random?wallpapers)",
-            backgroundRepeat: "no-repeat",
-            backgroundColor: (t) =>
-              t.palette.mode === "light"
-                ? t.palette.grey[50]
-                : t.palette.grey[900],
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          xs={12}
+          sm={12}
+          md={5}
+          component={Paper}
+          elevation={6}
+          square
+        >
           <Box
             sx={{
               my: 8,
@@ -187,8 +190,19 @@ export function SignIn() {
                 </Box>
               ) : null}
             </Box>
+            <Box>
+              <img
+                src={logo}
+                style={{
+                  height: "250px",
+                  borderRadius: "50%",
+                  padding: "20px",
+                }}
+              />
+            </Box>
           </Box>
         </Grid>
+        <Carousel />
       </Grid>
     </ThemeProvider>
   );

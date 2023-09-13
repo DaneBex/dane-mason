@@ -13,7 +13,7 @@ import { useTheme, ThemeProvider } from "@mui/material/styles";
 import { useMutation } from "@apollo/react-hooks";
 import { z } from "zod";
 import { CreateUserDocument } from "../__generated__/graphql";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../app";
 
 export const SignupValidate = z
