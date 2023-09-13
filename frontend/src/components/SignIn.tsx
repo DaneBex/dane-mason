@@ -18,6 +18,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { LoginUserDocument } from "../__generated__/graphql";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../app";
+import { Carousel } from "./Carousel";
 
 export const SignInValidate = z.object({
   email: z.string().email(),
@@ -88,11 +89,24 @@ export function SignIn() {
       <Grid
         container
         component="main"
-        sx={{ height: "100vh", width: "100vw", overflow: "hidden" }}
+        sx={{
+          height: "100vh",
+          width: "100vw",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "row-reverse",
+        }}
       >
         <CssBaseline />
-        <Carousel />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={5}
+          component={Paper}
+          elevation={6}
+          square
+        >
           <Box
             sx={{
               my: 8,
@@ -188,6 +202,7 @@ export function SignIn() {
             </Box>
           </Box>
         </Grid>
+        <Carousel />
       </Grid>
     </ThemeProvider>
   );
