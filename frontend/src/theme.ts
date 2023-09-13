@@ -1,6 +1,20 @@
-import { createTheme } from "@mui/material/styles";
+import {
+  PaletteColor,
+  PaletteColorOptions,
+  createTheme,
+} from "@mui/material/styles";
 
-const theme = createTheme({
+declare module "@mui/material/styles" {
+  interface Palette {
+    diamond?: PaletteColor;
+  }
+
+  interface PaletteOptions {
+    diamond?: PaletteColorOptions;
+  }
+}
+
+export const theme = createTheme({
   palette: {
     primary: {
       main: "#60D394",
@@ -19,7 +33,13 @@ const theme = createTheme({
     action: {
       active: "#EF6461",
     },
+    diamond: {
+      main: "#AFECE7",
+    },
     divider: "#CACACA",
+  },
+  typography: {
+    fontFamily: "Lato",
   },
 });
 
