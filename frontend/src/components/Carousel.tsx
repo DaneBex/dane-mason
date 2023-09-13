@@ -32,20 +32,21 @@ export function Carousel() {
           backgroundPosition: "center",
           display: "flex",
           flexDirection: "column",
+          height: "100%",
         }}
       >
         {activeStep === 0 ? (
-          <img src={barstow} style={{ height: "100%" }} />
-        ) : activeStep === 1 ? (
-          <img src={eau} style={{ height: "100%" }} />
-        ) : null}
+          <img src={barstow} style={{ height: "90%" }} />
+        ) : (
+          <img src={eau} style={{ height: "90%" }} />
+        )}
 
         <MobileStepper
           variant="dots"
           steps={2}
           position="static"
           activeStep={activeStep}
-          sx={{ flexGrow: 1, width: "100%" }}
+          sx={{ flexGrow: 1, width: "100%", height: "10%" }}
           nextButton={
             <Button
               size="small"
