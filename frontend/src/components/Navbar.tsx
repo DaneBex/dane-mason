@@ -13,6 +13,8 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { ThemeProvider, useTheme } from "@mui/material/styles";
 import logo from "../images/EconEcho.png";
+import { Badge } from "@mui/material";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
 export function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -99,6 +101,17 @@ export function Navbar() {
                 </Button>
               ))}
             </Box>
+            <Badge
+              sx={{ marginRight: "30px", width: "27px" }}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              badgeContent={1}
+              color="secondary"
+            >
+              <LocalOfferIcon sx={{ fontSize: "35px", color: "white" }} />
+            </Badge>
 
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
