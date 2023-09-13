@@ -14,11 +14,8 @@ declare module "@mui/material/styles" {
   }
 }
 
-const theme = createTheme({
+export const theme = createTheme({
   palette: {
-    diamond: {
-      main: "#AFECE7",
-    },
     primary: {
       main: "#60D394",
     },
@@ -35,6 +32,9 @@ const theme = createTheme({
     },
     action: {
       active: "#EF6461",
+    },
+    diamond: {
+      main: "#AFECE7",
     },
     divider: "#CACACA",
   },

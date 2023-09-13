@@ -182,10 +182,10 @@ export function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  name="password"
+                  name="confirm-password"
                   label="Confirm Password"
                   type="password"
-                  id="password"
+                  id="confirm-password"
                   autoComplete="new-password"
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   error={confirmPasswordError ? true : false}

@@ -5,6 +5,7 @@ import { Home } from "./components/Home";
 import { SignIn } from "./components/SignIn";
 import { SignUp } from "./components/SignUp";
 import { Profile } from "./components/Profile";
+import "./App.css";
 
 interface UserContextType {
   user: Partial<User> | null;
