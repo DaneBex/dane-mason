@@ -5,8 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "compile": "tsc",
-    "start": "npm run compile && prettier --write \"src/*\" && node ./dist/index"
+    "start": "prettier --write \"src/*\" && bun run src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +26,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
+    "bun-types": "^1.0.3",
     "prisma": "^5.2.0",
     "typescript": "^5.2.2"
   }
